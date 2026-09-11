@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dapworks</title>
+<meta name="description" content="Dapworks builds small, careful software. Home of Sage and Rep.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23111'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='18' text-anchor='middle' fill='%23fff'%3Ed%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #fafaf7;
+    --fg: #16161a;
+    --muted: #6b6b73;
+    --rule: #dcdcd6;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #111114; --fg: #f2f2ee; --muted: #8f8f99; --rule: #2a2a30; }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 34rem;
+    padding: 3rem 1.5rem;
+    margin: 0 auto;
+    width: 100%;
+  }
+  h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: clamp(2.4rem, 7vw, 3.4rem);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin: 0 0 1.25rem;
+  }
+  p { margin: 0 0 1rem; }
+  .muted { color: var(--muted); }
+  ul.products {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0 0;
+    border-top: 1px solid var(--rule);
+  }
+  ul.products li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  ul.products span:last-child { color: var(--muted); white-space: nowrap; }
+  footer {
+    max-width: 34rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1.5rem 2rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Dapworks</h1>
+  <p>Small, careful software built in Australia.</p>
+  <p class="muted">A full site is on its way. Until then, here is what we are working on.</p>
+  <ul class="products">
+    <li><span>Sage</span><span>in development</span></li>
+    <li><span>Rep</span><span>in development</span></li>
+  </ul>
+</main>
+<footer>&copy; 2026 Dapworks</footer>
+</body>
+</html>
