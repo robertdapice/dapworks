@@ -4,39 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dapworks</title>
-<meta name="description" content="Dapworks is a software studio in Sydney founded by Rob d'Apice. It makes Sage, a macro tracker, and Rep, the handstand app.">
-<link rel="canonical" href="https://dapworks.co/">
+<meta name="description" content="Dapworks is a software studio in Sydney, Australia.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23111'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='18' text-anchor='middle' fill='%23fff'%3Ed%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="/style.css">
+<style>
+  :root { --bg: #fbfbf9; --fg: #17171a; --muted: #6a6a70; --accent: #23604c; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #121215; --fg: #f1f1ec; --muted: #9a9aa2; --accent: #86cbad; } }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--fg); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; min-height: 100%; }
+  main { flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 34rem; width: 100%; margin: 0 auto; padding: 3rem 1.5rem; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: clamp(2.4rem, 7vw, 3.4rem); letter-spacing: -.02em; line-height: 1.05; margin: 0 0 1rem; }
+  p { margin: 0 0 .6rem; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  footer { max-width: 34rem; width: 100%; margin: 0 auto; padding: 0 1.5rem 2rem; font-size: .85rem; color: var(--muted); }
+</style>
 </head>
 <body>
-<header class="site"><div class="wrap">
-  <a class="brand" href="/">Dapworks</a>
-  <nav class="main" aria-label="Main"><a href="/sage/">Sage</a><a href="/rep/">Rep</a><a href="/about/">About</a><a href="/support/">Support</a></nav>
-</div></header>
-<main><div class="wrap">
-
-<h1>Dapworks</h1>
-<p class="lead">A software studio in Sydney, founded by Rob d'Apice.</p>
-
-<ul class="products">
-  <li><a href="/sage/">
-    <img src="/assets/sage-icon-200.png" alt="" width="64" height="64">
-    <div><div class="name">Sage</div><p class="tag">Track macros in seconds.</p><span class="status">Launching soon</span></div>
-  </a></li>
-  <li><a href="/rep/">
-    <img src="/assets/rep-icon-200.png" alt="" width="64" height="64">
-    <div><div class="name">Rep</div><p class="tag">The handstand app.</p><span class="status">In development</span></div>
-  </a></li>
-</ul>
-
-<h2>Contact</h2>
-<p><a href="mailto:hello@dapworks.co">hello@dapworks.co</a></p>
-
-</div></main>
-<footer class="site"><div class="wrap">
-  <span>&copy; 2026 Dapworks, Sydney</span>
-  <span><a href="mailto:hello@dapworks.co">hello@dapworks.co</a> &middot; <a href="/privacy/">Privacy</a></span>
-</div></footer>
+<main>
+  <h1>Dapworks</h1>
+  <p>A software studio in Sydney, Australia.</p>
+  <p><a href="mailto:hello@dapworks.co">hello@dapworks.co</a></p>
+</main>
+<footer>&copy; 2026 Dapworks</footer>
 </body>
 </html>

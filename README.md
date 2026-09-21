@@ -1,19 +1,7 @@
 # dapworks
 
-Minimal holder site for Dapworks. Static HTML, deployed with GitHub Pages.
+Holding page for Dapworks. Static HTML on GitHub Pages.
 
-## Domains
-
-- **dapworks.co** is the primary domain. The `CNAME` file in this repo tells GitHub Pages to serve the site there.
+- **dapworks.co** is the primary domain (`CNAME` file).
 - **dapworks.com.au** is a Namecheap URL redirect (root and www) to https://dapworks.co.
-
-## DNS (Namecheap BasicDNS) for dapworks.co
-
-- `A @ 185.199.108.153`
-- `A @ 185.199.109.153`
-- `A @ 185.199.110.153`
-- `A @ 185.199.111.153`
-- `CNAME www robertdapice.github.io`
-- `TXT @ v=spf1 include:_spf.google.com ~all`
-- `TXT _dmarc v=DMARC1; p=none; rua=mailto:hello@dapworks.co`
-- Email type: Namecheap free forwarding. hello@dapworks.co forwards to Rob's Gmail; outbound is Gmail "Send mail as" via smtp.gmail.com.
+- DNS for dapworks.co is on Namecheap BasicDNS: A records to GitHub Pages, `CNAME www robertdapice.github.io`, Namecheap email forwarding for hello@, SPF and DMARC TXT records.
