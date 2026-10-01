@@ -18,6 +18,10 @@
   h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: clamp(2.4rem, 7vw, 3.2rem); letter-spacing: -.02em; line-height: 1.05; margin: 0 0 1rem; }
   h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: 1.45rem; letter-spacing: -.01em; margin: 3rem 0 .75rem; }
   p { margin: 0 0 1rem; }
+  h3 { font-weight: 600; font-size: 1rem; margin: 1.5rem 0 .5rem; }
+  ul.principles { list-style: none; padding: 0; margin: 0 0 1rem; }
+  ul.principles li { padding: .45rem 0; border-top: 1px solid var(--rule); }
+  ul.principles li:last-child { border-bottom: 1px solid var(--rule); }
   .lead { font-size: 1.2rem; }
   ul.products { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--rule); }
   ul.products li { display: flex; align-items: center; gap: 1.1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--rule); }
@@ -47,7 +51,13 @@
   </ul>
 
   <h2>About</h2>
-  <p>Dapworks builds focused consumer apps that are powered by frontier AI technology. Each one does a single job, automates the data entry, and keeps processing on the device where it can. Rob d'Apice founded the studio in Sydney in 2026 and builds the apps himself. Dapworks is the trading name of Dap Works Pty Ltd, ABN 40 697 244 376.</p>
+  <p>Dapworks builds focused consumer apps that are powered by frontier AI technology.</p>
+  <h3>Product principles</h3>
+  <ul class="principles">
+    <li><strong>Seamless.</strong> Technology should create value with as little effort as possible.</li>
+    <li><strong>Simple.</strong> Technology should focus on doing a few things really, really well.</li>
+    <li><strong>Minimal.</strong> Technology should only show me what I need to know.</li>
+  </ul>
 
   <h2>Contact</h2>
   <p><a href="mailto:hello@dapworks.co">hello@dapworks.co</a></p>
