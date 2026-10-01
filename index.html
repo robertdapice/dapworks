@@ -4,28 +4,57 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dapworks</title>
-<meta name="description" content="Dapworks is a software studio in Sydney, Australia.">
+<meta name="description" content="Dapworks is a software studio in Sydney, Australia, founded by Rob d'Apice. It makes Sage, a macro tracker, and Rep, the handstand app.">
+<link rel="canonical" href="https://dapworks.co/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23111'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='18' text-anchor='middle' fill='%23fff'%3Ed%3C/text%3E%3C/svg%3E">
 <style>
-  :root { --bg: #fbfbf9; --fg: #17171a; --muted: #6a6a70; --accent: #23604c; color-scheme: light dark; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #121215; --fg: #f1f1ec; --muted: #9a9aa2; --accent: #86cbad; } }
+  :root { --bg: #fbfbf9; --fg: #17171a; --muted: #6a6a70; --rule: #e4e4de; --accent: #23604c; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #121215; --fg: #f1f1ec; --muted: #9a9aa2; --rule: #2b2b31; --accent: #86cbad; } }
   * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; }
-  body { background: var(--bg); color: var(--fg); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; min-height: 100%; }
-  main { flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 34rem; width: 100%; margin: 0 auto; padding: 3rem 1.5rem; }
-  h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: clamp(2.4rem, 7vw, 3.4rem); letter-spacing: -.02em; line-height: 1.05; margin: 0 0 1rem; }
-  p { margin: 0 0 .6rem; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
-  footer { max-width: 34rem; width: 100%; margin: 0 auto; padding: 0 1.5rem 2rem; font-size: .85rem; color: var(--muted); }
+  main { max-width: 36rem; margin: 0 auto; padding: 4.5rem 1.5rem 3rem; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: clamp(2.4rem, 7vw, 3.2rem); letter-spacing: -.02em; line-height: 1.05; margin: 0 0 1rem; }
+  h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: 1.45rem; letter-spacing: -.01em; margin: 3rem 0 .75rem; }
+  p { margin: 0 0 1rem; }
+  .lead { font-size: 1.2rem; }
+  ul.products { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--rule); }
+  ul.products li { display: flex; align-items: center; gap: 1.1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--rule); }
+  ul.products img { width: 60px; height: 60px; border-radius: 13px; flex: none; box-shadow: 0 3px 10px rgba(0,0,0,.12); }
+  ul.products .name { font-family: Georgia, "Times New Roman", serif; font-size: 1.3rem; }
+  ul.products .tag { color: var(--muted); margin: 0; }
+  ul.products .status { display: inline-block; margin-top: .35rem; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--rule); border-radius: 999px; padding: .1rem .55rem; }
+  footer { max-width: 36rem; margin: 0 auto; padding: 0 1.5rem 3rem; font-size: .85rem; color: var(--muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1rem; }
+  footer a { color: var(--muted); }
 </style>
 </head>
 <body>
 <main>
   <h1>Dapworks</h1>
-  <p>A software studio in Sydney, Australia.</p>
+  <p class="lead">A software studio in Sydney, Australia, founded by Rob d'Apice.</p>
+
+  <h2>Apps</h2>
+  <ul class="products">
+    <li>
+      <img src="/assets/sage-icon-200.png" alt="Sage icon" width="60" height="60">
+      <div><div class="name">Sage</div><p class="tag">Track macros in seconds. Log a meal by photo or voice and see calories and protein remaining.</p><span class="status">In development</span></div>
+    </li>
+    <li>
+      <img src="/assets/rep-icon-200.png" alt="Rep icon" width="60" height="60">
+      <div><div class="name">Rep</div><p class="tag">The handstand app. Finds the handstands in your videos, crops each rep, and tracks hold time.</p><span class="status">In development</span></div>
+    </li>
+  </ul>
+
+  <h2>About</h2>
+  <p>Dapworks builds small, focused apps. Each one does a single job, automates the data entry, and keeps processing on the device where it can. Rob d'Apice founded the studio in Sydney in 2026 and builds the apps himself.</p>
+
+  <h2>Contact</h2>
   <p><a href="mailto:hello@dapworks.co">hello@dapworks.co</a></p>
 </main>
-<footer>&copy; 2026 Dapworks</footer>
+<footer>
+  <span>&copy; 2026 Dapworks, Sydney</span>
+  <span><a href="/privacy/">Privacy</a></span>
+</footer>
 </body>
 </html>
