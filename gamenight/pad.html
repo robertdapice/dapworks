@@ -1,0 +1,267 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Couch Clash Gamepad</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0b1020; touch-action: none;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; overscroll-behavior: none; }
+  canvas { position: fixed; left: 0; top: 0; width: 100%; height: 100%; touch-action: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>window.CC_NET = 'peer';</script>
+<script src="lib/peerjs.min.js"></script>
+<script>
+'use strict';
+// The phone is a dumb gamepad: one floating stick on the left, A and B on the right.
+// Everything is drawn in "layout" coordinates that are always landscape, so it also
+// works when the phone's rotation lock keeps the browser in portrait.
+if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {   // older phones / browsers
+  CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+    r = Math.max(0, Math.min(typeof r === 'number' ? r : (r && r[0]) || 0, Math.abs(w) / 2, Math.abs(h) / 2));
+    this.moveTo(x + r, y); this.arcTo(x + w, y, x + w, y + h, r); this.arcTo(x + w, y + h, x, y + h, r);
+    this.arcTo(x, y + h, x, y, r); this.arcTo(x, y, x + w, y, r); this.closePath();
+  };
+}
+const cv = document.getElementById('c'), g = cv.getContext('2d');
+const FONT = "Futura,'Avenir Next','Trebuchet MS',sans-serif";
+const COLS = ['#35C2FF', '#FF5D73', '#6EE06A'], DARK = ['#0B3A5C', '#5C1220', '#174D1C'];
+let VW, VH, LW, LH, rot = false, dpr = 1;
+let slot = -2, status = 'Connecting…', pingMs = -1;
+let labels = { a: 'A', b: 'B', title: '' };
+let name = localStorage.getItem('cc_name') || '';
+const padId = localStorage.getItem('cc_id') || (Math.random().toString(36).slice(2) + Date.now().toString(36));
+localStorage.setItem('cc_id', padId);
+
+const stick = { id: null, ox: 0, oy: 0, x: 0, y: 0 };
+const btn = new Map();            // touch id -> 'a' | 'b'
+let aDown = false, bDown = false, flashA = 0, flashB = 0, buzzFlash = 0;
+
+function resize() {
+  VW = innerWidth; VH = innerHeight; dpr = Math.min(devicePixelRatio || 1, 3);
+  cv.width = Math.round(VW * dpr); cv.height = Math.round(VH * dpr);
+  rot = VH > VW; LW = rot ? VH : VW; LH = rot ? VW : VH;
+}
+addEventListener('resize', resize); addEventListener('orientationchange', () => setTimeout(resize, 200)); resize();
+const toL = (cx, cy) => rot ? [cy, VW - cx] : [cx, cy];
+const geo = () => {
+  const R = Math.min(LH * 0.25, 100);
+  const rA = Math.min(LH * 0.21, 92), rB = Math.min(LH * 0.16, 70);
+  return { R, sx: LW * 0.22, sy: LH * 0.58, ax: LW * 0.84, ay: LH * 0.63, rA, bx: LW * 0.63, by: LH * 0.40, rB };
+};
+
+// ---------- network ----------
+// Serverless mode: a WebSocket-shaped wrapper around a direct WebRTC link to the host page.
+const NET = window.CC_NET || 'ws';
+let room = (new URLSearchParams(location.search).get('r') || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4);
+let misses = 0;
+function PeerSocket(code) {
+  const self = this; self.readyState = 0; self.reason = '';
+  let conn = null, done = false, peer = null;
+  const fail = why => { if (done) return; done = true; self.readyState = 3; self.reason = why || 'closed'; try { peer && peer.destroy(); } catch (e) {} if (self.onclose) self.onclose(); };
+  self.send = str => { if (conn && self.readyState === 1) { try { conn.send(JSON.parse(str)); } catch (e) {} } };
+  self.close = () => fail('closed');
+  if (typeof Peer === 'undefined') { setTimeout(() => fail('offline'), 0); return; }
+  peer = new Peer();
+  peer.on('open', () => {
+    conn = peer.connect('ccgn-' + code, { reliable: true });
+    conn.on('open', () => { self.readyState = 1; if (self.onopen) self.onopen(); });
+    conn.on('data', m => { if (self.onmessage) self.onmessage({ data: JSON.stringify(m) }); });
+    conn.on('close', () => fail('closed')); conn.on('error', () => fail('error'));
+  });
+  peer.on('error', err => fail(err && err.type));
+  setTimeout(() => { if (self.readyState === 0) fail('timeout'); }, 12000);
+}
+function askRoom(msg) {
+  let box = document.getElementById('roombox');
+  if (!box) {
+    box = document.createElement('div'); box.id = 'roombox';
+    box.style.cssText = 'position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#0b1020;color:#fff;font:bold 20px Futura,Avenir Next,Trebuchet MS,sans-serif;text-align:center;padding:20px';
+    box.innerHTML = '<div style="font-size:30px;color:#35C2FF">COUCH CLASH</div><div id="roommsg"></div><input id="roomin" maxlength="4" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" style="font:bold 44px Futura,sans-serif;width:5.2em;text-align:center;letter-spacing:.25em;text-transform:uppercase;border-radius:14px;border:3px solid #35C2FF;background:#111730;color:#fff;padding:10px"><button id="roomgo" style="font:bold 24px Futura,sans-serif;padding:12px 40px;border-radius:30px;border:0;background:#FFD23F;color:#0a0d18">JOIN</button>';
+    document.body.appendChild(box);
+    const go = () => {
+      const v = document.getElementById('roomin').value.toUpperCase().replace(/[^A-Z]/g, '');
+      if (v.length !== 4) return;
+      room = v; misses = 0; try { history.replaceState(null, '', '?r=' + v); } catch (e) {}
+      box.style.display = 'none'; replaced = false; connect();
+    };
+    document.getElementById('roomgo').addEventListener('click', go);
+    document.getElementById('roomin').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+  }
+  document.getElementById('roommsg').textContent = msg;
+  box.style.display = 'flex';
+}
+let ws = null, lastSent = '', lastSendT = 0, dirty = false, replaced = false;
+function connect() {
+  if (ws && ws.readyState < 2) return;
+  if (NET === 'peer' && room.length !== 4) { askRoom('Enter the 4-letter code on the big screen'); return; }
+  status = 'Connecting…';
+  ws = NET === 'peer' ? new PeerSocket(room) : new WebSocket('ws://' + location.host);
+  ws.onopen = () => { ws.send(JSON.stringify({ t: 'hello', role: 'pad', v: 2, id: padId, name })); status = ''; lastSent = ''; misses = 0; };
+  ws.onmessage = e => {
+    let m; try { m = JSON.parse(e.data); } catch (err) { return; }
+    if (m.t === 'slot') slot = m.s;
+    else if (m.t === 'bye') replaced = true;   // this phone joined again from another tab
+    else if (m.t === 'cfg') labels = m;
+    else if (m.t === 'buzz') { buzzFlash = 1; if (navigator.vibrate) navigator.vibrate(m.ms || 60); }
+    else if (m.t === 'pong') pingMs = Math.round(performance.now() - m.ts);
+  };
+  const sock = ws;
+  ws.onclose = () => {
+    status = replaced ? 'Open in another tab. Tap to use this one' : 'Reconnecting…'; slot = -2;
+    // Serverless mode: if the game with this code cannot be found after a few tries, ask for the code again.
+    if (NET === 'peer' && !replaced && sock.reason !== 'closed' && (misses += sock.reason === 'peer-unavailable' ? 3 : 1) >= 6) { misses = 0; askRoom(sock.reason === 'offline' ? 'No connection. Check your internet and try again' : 'Could not find game ' + room + '. Check the code on the big screen'); room = ''; return; }
+    if (!replaced && !document.hidden) setTimeout(connect, NET === 'peer' ? 1500 : 800);
+  };
+  ws.onerror = () => { try { ws.close(); } catch (e) {} };
+}
+connect();
+// A tab in the background lets go of its player slot, and rejoins when it is shown again.
+document.addEventListener('visibilitychange', () => { if (document.hidden) { try { ws.close(); } catch (e) {} } else { replaced = false; connect(); } });
+setInterval(() => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ t: 'ping', ts: performance.now() })); }, 2000);
+function sendInput(force) {
+  if (!ws || ws.readyState !== 1) return;
+  const now = performance.now();
+  if (!force && now - lastSendT < 14) { dirty = true; return; }
+  const s = JSON.stringify({ t: 'i', x: Math.round(stick.x * 100) / 100, y: Math.round(stick.y * 100) / 100, a: aDown ? 1 : 0, b: bDown ? 1 : 0 });
+  if (s === lastSent && !force) { dirty = false; return; }
+  ws.send(s); lastSent = s; lastSendT = now; dirty = false;
+}
+setInterval(() => { lastSent = ''; sendInput(true); }, 250);   // keepalive / resync
+
+// ---------- touch ----------
+function refreshButtons() {
+  let a = false, b = false;
+  for (const v of btn.values()) { if (v === 'a') a = true; else b = true; }
+  const changed = a !== aDown || b !== bDown;
+  if (a && !aDown) { flashA = 1; if (navigator.vibrate) navigator.vibrate(8); }
+  if (b && !bDown) { flashB = 1; if (navigator.vibrate) navigator.vibrate(8); }
+  aDown = a; bDown = b;
+  if (changed) sendInput(true);
+}
+function whichBtn(lx, ly) {
+  const G = geo();
+  return Math.hypot(lx - G.ax, ly - G.ay) - G.rA <= Math.hypot(lx - G.bx, ly - G.by) - G.rB ? 'a' : 'b';
+}
+function setStick(lx, ly) {
+  const G = geo();
+  let dx = lx - stick.ox, dy = ly - stick.oy, d = Math.hypot(dx, dy);
+  if (d > G.R) { stick.ox += dx / d * (d - G.R); stick.oy += dy / d * (d - G.R); dx = dx / d * G.R; dy = dy / d * G.R; d = G.R; }
+  let m = d / G.R;
+  if (m < 0.14) { stick.x = 0; stick.y = 0; }
+  else { const k = (m - 0.14) / 0.86 / m; stick.x = dx / G.R * k; stick.y = dy / G.R * k; }
+  sendInput(false);
+}
+cv.addEventListener('touchstart', e => {
+  e.preventDefault();
+  if (replaced) { replaced = false; connect(); return; }
+  for (const t of e.changedTouches) {
+    const [lx, ly] = toL(t.clientX, t.clientY);
+    if (ly < 52 && Math.abs(lx - LW / 2) < 80) { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ t: 'menu' })); continue; }
+    if (ly < 52 && lx < LW * 0.3) { rename(); continue; }
+    if (lx < LW * 0.5) {
+      if (stick.id === null) {
+        const G = geo();
+        stick.id = t.identifier;
+        stick.ox = Math.max(G.R * 0.6, Math.min(LW * 0.5 - G.R * 0.4, lx));
+        stick.oy = Math.max(G.R * 0.6 + 40, Math.min(LH - G.R * 0.6, ly));
+        setStick(lx, ly);
+      }
+    } else { btn.set(t.identifier, whichBtn(lx, ly)); }
+  }
+  refreshButtons();
+}, { passive: false });
+cv.addEventListener('touchmove', e => {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    const [lx, ly] = toL(t.clientX, t.clientY);
+    if (t.identifier === stick.id) setStick(lx, ly);
+    else if (btn.has(t.identifier)) btn.set(t.identifier, whichBtn(lx, ly));
+  }
+  refreshButtons();
+}, { passive: false });
+function end(e) {
+  e.preventDefault();
+  for (const t of e.changedTouches) {
+    if (t.identifier === stick.id) { stick.id = null; stick.x = 0; stick.y = 0; sendInput(true); }
+    btn.delete(t.identifier);
+  }
+  refreshButtons();
+}
+cv.addEventListener('touchend', end, { passive: false });
+cv.addEventListener('touchcancel', end, { passive: false });
+document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+function rename() {
+  const n = prompt('Your name (max 10 letters):', name);
+  if (n === null) return;
+  name = n.trim().slice(0, 10).toUpperCase();
+  localStorage.setItem('cc_name', name);
+  if (ws && ws.readyState === 1) ws.send(JSON.stringify({ t: 'name', name }));
+}
+
+// ---------- drawing ----------
+function txt(s, x, y, size, color, align) {
+  g.font = 'bold ' + size + 'px ' + FONT; g.textAlign = align || 'center'; g.textBaseline = 'middle';
+  g.fillStyle = color; g.fillText(s, x, y);
+}
+function draw() {
+  requestAnimationFrame(draw);
+  if (dirty) sendInput(false);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (rot) { g.translate(VW, 0); g.rotate(Math.PI / 2); }
+  const G = geo(), i = slot >= 0 ? slot : 0, col = slot >= 0 ? COLS[i] : '#8892a6';
+  // background
+  const bg = g.createLinearGradient(0, 0, LW, LH);
+  bg.addColorStop(0, slot >= 0 ? DARK[i] : '#1a2030'); bg.addColorStop(1, '#090c16');
+  g.fillStyle = bg; g.fillRect(0, 0, LW, LH);
+  if (buzzFlash > 0) { g.fillStyle = 'rgba(255,255,255,' + (buzzFlash * 0.35) + ')'; g.fillRect(0, 0, LW, LH); buzzFlash = Math.max(0, buzzFlash - 0.08); }
+  g.fillStyle = 'rgba(255,255,255,0.06)'; g.fillRect(LW / 2 - 1, 60, 2, LH - 80);
+
+  // top bar
+  const who = slot >= 0 ? (name || 'PLAYER ' + (slot + 1)) : slot === -1 ? 'GAME FULL' : '…';
+  txt(who, 16, 26, 20, col, 'left');
+  txt('tap to rename', 16, 46, 10, 'rgba(255,255,255,0.35)', 'left');
+  g.fillStyle = 'rgba(255,255,255,0.12)'; g.beginPath(); g.roundRect(LW / 2 - 52, 10, 104, 32, 16); g.fill();
+  txt('MENU', LW / 2, 27, 14, 'rgba(255,255,255,0.8)');
+  txt(status || (pingMs >= 0 ? pingMs + ' ms' : ''), LW - 16, 26, 14, status ? '#FFD23F' : 'rgba(255,255,255,0.45)', 'right');
+  if (labels.title) txt(labels.title, LW - 16, 46, 11, 'rgba(255,255,255,0.4)', 'right');
+
+  // stick
+  const cx = stick.id !== null ? stick.ox : G.sx, cy = stick.id !== null ? stick.oy : G.sy;
+  g.lineWidth = 4; g.strokeStyle = 'rgba(255,255,255,0.22)'; g.fillStyle = 'rgba(255,255,255,0.05)';
+  g.beginPath(); g.arc(cx, cy, G.R, 0, 6.283); g.fill(); g.stroke();
+  let kx = cx, ky = cy;
+  if (stick.id !== null) { const m = Math.hypot(stick.x, stick.y); const k = m > 0 ? (0.14 + 0.86 * m) / m : 0; kx += stick.x * k * G.R; ky += stick.y * k * G.R; }
+  g.fillStyle = col; g.globalAlpha = stick.id !== null ? 1 : 0.7;
+  g.beginPath(); g.arc(kx, ky, G.R * 0.46, 0, 6.283); g.fill();
+  g.globalAlpha = 1; g.fillStyle = 'rgba(255,255,255,0.35)';
+  g.beginPath(); g.arc(kx - G.R * 0.1, ky - G.R * 0.12, G.R * 0.18, 0, 6.283); g.fill();
+  if (labels.stick && stick.id === null) txt(labels.stick, G.sx, G.sy + G.R + 22, 14, 'rgba(255,255,255,0.45)');
+
+  // buttons
+  const button = (x, y, r, down, flash, label, key, c) => {
+    const s = down ? 0.93 : 1 + flash * 0.06;
+    g.fillStyle = down ? '#fff' : c; g.globalAlpha = down ? 1 : 0.9;
+    g.beginPath(); g.arc(x, y, r * s, 0, 6.283); g.fill(); g.globalAlpha = 1;
+    g.lineWidth = 5; g.strokeStyle = 'rgba(255,255,255,' + (0.35 + flash * 0.6) + ')'; g.stroke();
+    txt(key, x, y - (label && label !== key ? r * 0.16 : 0), r * 0.62, down ? c : 'rgba(0,0,0,0.55)');
+    if (label && label !== key) txt(label, x, y + r * 0.42, Math.max(11, r * 0.2), down ? c : 'rgba(0,0,0,0.6)');
+  };
+  button(G.ax, G.ay, G.rA, aDown, flashA, labels.a, 'A', col);
+  button(G.bx, G.by, G.rB, bDown, flashB, labels.b, 'B', '#FFD23F');
+  flashA = Math.max(0, flashA - 0.07); flashB = Math.max(0, flashB - 0.07);
+
+  if (slot === -1) { g.fillStyle = 'rgba(0,0,0,0.7)'; g.fillRect(0, 0, LW, LH); txt('Two players are already connected', LW / 2, LH / 2, 22, '#fff'); }
+  if (rot) txt('turn your phone sideways  ⟳', LW / 2, LH - 14, 12, 'rgba(255,255,255,0.4)');
+}
+draw();
+</script>
+</body>
+</html>
