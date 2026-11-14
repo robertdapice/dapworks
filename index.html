@@ -18,17 +18,16 @@
   h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: clamp(2.4rem, 7vw, 3.2rem); letter-spacing: -.02em; line-height: 1.05; margin: 0 0 1rem; }
   h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: 1.45rem; letter-spacing: -.01em; margin: 3rem 0 .75rem; }
   p { margin: 0 0 1rem; }
-  h3 { font-weight: 600; font-size: 1rem; margin: 1.5rem 0 .5rem; }
   ul.principles { list-style: none; padding: 0; margin: 0 0 1rem; }
-  ul.principles li { padding: .45rem 0; border-top: 1px solid var(--rule); }
+  ul.principles li { padding: .45rem 0; border-top: 1px solid var(--rule); white-space: nowrap; }
   ul.principles li:last-child { border-bottom: 1px solid var(--rule); }
   .lead { font-size: 1.2rem; }
   ul.products { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--rule); }
   ul.products li { display: flex; align-items: center; gap: 1.1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--rule); }
   ul.products img { width: 60px; height: 60px; border-radius: 13px; flex: none; box-shadow: 0 3px 10px rgba(0,0,0,.12); }
-  ul.products .name { font-family: Georgia, "Times New Roman", serif; font-size: 1.3rem; }
+  ul.products .name { font-family: Georgia, "Times New Roman", serif; font-size: 1.3rem; color: var(--fg); }
   ul.products .tag { color: var(--muted); margin: 0; }
-  ul.products .status { display: inline-block; margin-top: .35rem; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--rule); border-radius: 999px; padding: .1rem .55rem; }
+  ul.products .links { margin: .35rem 0 0; font-size: .92rem; display: flex; gap: 1.1rem; }
   footer { max-width: 36rem; margin: 0 auto; padding: 0 1.5rem 3rem; font-size: .85rem; color: var(--muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1rem; }
   footer a { color: var(--muted); }
 </style>
@@ -41,22 +40,22 @@
   <h2>Apps</h2>
   <ul class="products">
     <li>
-      <img src="/assets/sage-icon-200.png" alt="Sage icon" width="60" height="60">
-      <div><div class="name">Sage</div><p class="tag">Track macros in seconds. Log a meal by photo or voice and see calories and protein remaining.</p><span class="status">In beta</span></div>
+      <a href="https://sage.fit"><img src="/assets/sage-icon-200.png" alt="Sage icon" width="60" height="60"></a>
+      <div><a class="name" href="https://sage.fit">Sage</a><p class="tag">Track macros in seconds. Log a meal by photo or voice and see calories and protein remaining.</p><p class="links"><a href="https://sage.fit">sage.fit</a><a href="https://apps.apple.com/app/id6759079117">App Store</a></p></div>
     </li>
     <li>
-      <img src="/assets/rep-icon-200.png" alt="Rep icon" width="60" height="60">
-      <div><div class="name">Rep</div><p class="tag">The handstand app. Finds the handstands in your videos, crops each rep, and tracks hold time.</p><span class="status">In development</span></div>
+      <a href="https://tryrep.fit"><img src="/assets/rep-icon-200.png" alt="Rep icon" width="60" height="60"></a>
+      <div><a class="name" href="https://tryrep.fit">Rep</a><p class="tag">The handstand app. Finds the handstands in your videos, crops each rep, and tracks hold time.</p><p class="links"><a href="https://tryrep.fit">tryrep.fit</a><a href="https://apps.apple.com/app/id6828188648">App Store</a></p></div>
     </li>
   </ul>
 
   <h2>About</h2>
   <p>Dapworks builds focused consumer apps that are powered by frontier AI technology.</p>
-  <h3>Product principles</h3>
+  <h2>Product principles</h2>
   <ul class="principles">
-    <li><strong>Seamless.</strong> Technology should create value with as little effort as possible.</li>
-    <li><strong>Simple.</strong> Technology should focus on doing a few things really, really well.</li>
-    <li><strong>Minimal.</strong> Technology should only show me what I need to know.</li>
+    <li><strong>Seamless.</strong> Maximum value, least effort.</li>
+    <li><strong>Simple.</strong> A few things, done really well.</li>
+    <li><strong>Minimal.</strong> Only what you need to know.</li>
   </ul>
 
   <h2>Contact</h2>
