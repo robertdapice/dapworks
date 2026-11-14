@@ -1,6 +1,6 @@
 # dapworks
 
-Holding page for Dapworks. Static HTML on GitHub Pages.
+Holding page for Dap Works. Static HTML on GitHub Pages.
 
 - **dapworks.co** is the primary domain (`CNAME` file).
 - **dapworks.com.au** is a Namecheap URL redirect (root and www) to https://dapworks.co.
