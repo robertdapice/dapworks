@@ -21,7 +21,9 @@
   ul.principles { list-style: none; padding: 0; margin: 0 0 1rem; }
   ul.principles li { padding: .45rem 0; border-top: 1px solid var(--rule); white-space: nowrap; }
   ul.principles li:last-child { border-bottom: 1px solid var(--rule); }
-  .lead { font-size: 1.2rem; }
+  .lead { font-size: 1.1rem; }
+  .nb { white-space: nowrap; }
+  @media (max-width: 480px) { .lead { font-size: 1rem; } }
   ul.products { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--rule); }
   ul.products li { display: flex; align-items: center; gap: 1.1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--rule); }
   ul.products img { width: 60px; height: 60px; border-radius: 13px; flex: none; box-shadow: 0 3px 10px rgba(0,0,0,.12); }
@@ -35,7 +37,7 @@
 <body>
 <main>
   <h1>Dapworks</h1>
-  <p class="lead">A software studio in Sydney, Australia, founded by Rob d'Apice.</p>
+  <p class="lead">A software studio in <span class="nb">Sydney, Australia,</span> <span class="nb">founded by Rob d'Apice.</span></p>
 
   <h2>Apps</h2>
   <ul class="products">
