@@ -1,0 +1,30 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["FPM427NM98.co.dapworks.gamepad"],
+        "components": [
+          {
+            "/": "/couchclash/pad.html",
+            "?": { "link": "?*" },
+            "exclude": true,
+            "comment": "A membership link (add another phone) stays in the browser: the app passes on room codes only."
+          },
+          {
+            "/": "/couchclash/pad.html",
+            "?": { "paid": "?*" },
+            "exclude": true,
+            "comment": "Coming back from a web checkout stays in the browser."
+          },
+          {
+            "/": "/couchclash/pad.html",
+            "comment": "The join link in the TV's QR code opens the installed controller app. Every other page of the site stays in the browser."
+          }
+        ]
+      }
+    ]
+  },
+  "appclips": {
+    "apps": ["FPM427NM98.co.dapworks.gamepad.Clip"]
+  }
+}
